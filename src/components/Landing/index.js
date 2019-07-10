@@ -44,7 +44,7 @@ const Landing = ({ logout, user }) => (
       </LogoutButton>
     </Header>
     <Container>
-      <Topic>Welcome Landing Page </Topic>
+      <Topic>Welcome Landing Page !</Topic>
       <Detail>{user}</Detail>
     </Container>
   </React.Fragment>
