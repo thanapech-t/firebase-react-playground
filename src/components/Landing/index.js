@@ -9,25 +9,52 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  color: black;
+`
+
+const Header = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  position: fixed;
+  background-color: black;
+  height: 50px;
+  width: 100%;
 `
 
 const LogoutButton = styled(Button)`
   width: fit-content;
-  margin: 0 auto;
+  margin: 10px;
 `
 
-const Landing = ({ logout }) => (
-  <Container>
-    LANdingggggggggggggg
-    <LogoutButton type="primary" onClick={() => logout()}>
-      LogoutButton
-    </LogoutButton>
-  </Container>
+const Topic = styled.h1``
+
+const Detail = styled.div`
+  font-size: 20px;
+  color: red;
+`
+
+const Landing = ({ logout, user }) => (
+  <React.Fragment>
+    <Header>
+      <LogoutButton type="primary" onClick={() => logout()}>
+        Logout
+      </LogoutButton>
+    </Header>
+    <Container>
+      <Topic>Welcome Landing Page </Topic>
+      <Detail>{user}</Detail>
+    </Container>
+  </React.Fragment>
 )
 
 const enhancer = compose(
   connect(
-    state => ({}),
+    state => ({
+      user: state.auth.user,
+    }),
     { logout },
   ),
 )

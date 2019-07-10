@@ -1,9 +1,9 @@
-import queryString from 'query-string'
-import moment from './moment-buddhist'
+import queryString from 'querystring'
+// import moment from './moment-buddhist'
 
-import addressData from '../static/data/address_data.json'
+// import addressData from '../static/data/address_data.json'
 
-moment.locale('th')
+// moment.locale('th')
 
 export const isPassword = value => {
   const upperRegex = /[A-Z]+/
@@ -23,11 +23,11 @@ export const isPasswordNoon = value => {
   return value.length >= length
 }
 
-export const getThaiDate = date => {
-  const d = new Date(date)
-  d.setFullYear(parseInt(d.getFullYear()) + 543)
-  return moment(d).format('ll')
-}
+// export const getThaiDate = date => {
+//   const d = new Date(date)
+//   d.setFullYear(parseInt(d.getFullYear()) + 543)
+//   return moment(d).format('ll')
+// }
 
 export const isNull = value => value === undefined || value === null
 
@@ -57,32 +57,32 @@ export const isEmail = value => emailRegex.test(value)
 const intOrFloatRegex = /[+-]?[0-9][0-9]*/
 export const isNumber = value => intOrFloatRegex.test(value)
 
-export const generateAddressStructure = addressData => {
-  var obj = []
-  addressData.map((province, i) =>
-    province[1].map((district, j) =>
-      district[1].map((subDistrict, k) =>
-        subDistrict[1].map((postcode, l) => {
-          var newObj = {
-            value: {
-              province: province[0],
-              district: district[0],
-              subDistrict: subDistrict[0],
-              postcode: `${postcode}`,
-            },
-            label: `${province[0]} >> ${district[0]} >> ${
-              subDistrict[0]
-            } >> ${postcode}`,
-          }
-          obj.push(newObj)
-        }),
-      ),
-    ),
-  )
-  return obj
-}
+// export const generateAddressStructure = addressData => {
+//   var obj = []
+//   addressData.map((province, i) =>
+//     province[1].map((district, j) =>
+//       district[1].map((subDistrict, k) =>
+//         subDistrict[1].map((postcode, l) => {
+//           var newObj = {
+//             value: {
+//               province: province[0],
+//               district: district[0],
+//               subDistrict: subDistrict[0],
+//               postcode: `${postcode}`,
+//             },
+//             label: `${province[0]} >> ${district[0]} >> ${
+//               subDistrict[0]
+//             } >> ${postcode}`,
+//           }
+//           obj.push(newObj)
+//         }),
+//       ),
+//     ),
+//   )
+//   return obj
+// }
 
-export const addressStructure = generateAddressStructure(addressData)
+// export const addressStructure = generateAddressStructure(addressData)
 
 export const displayNumber = value => {
   let nums = ('' + value).split('.')
@@ -225,7 +225,7 @@ export const formatter = (pattern = '', number = '') => {
         }
       }
     },
-    {i: 0, result: ''},
+    { i: 0, result: '' },
   ).result
 }
 
@@ -241,13 +241,13 @@ export const onlyThai = (value, previousValue) => {
   return previousValue
 }
 
-export const getAge = birthdate =>
-  moment().diff(
-    typeof birthdate === 'string' && birthdate
-      ? moment(birthdate, 'DD-MM-BBBB')
-      : birthdate,
-    'years',
-  )
+// export const getAge = birthdate =>
+//   moment().diff(
+//     typeof birthdate === 'string' && birthdate
+//       ? moment(birthdate, 'DD-MM-BBBB')
+//       : birthdate,
+//     'years',
+//   )
 
 export const getValueFormOptions = (options = [], value) => {
   const selected = options.find(o => o.value === value)

@@ -6,6 +6,7 @@ import { reduxForm } from 'redux-form'
 import { compose } from 'recompose'
 import { login } from '../../ducks/auth'
 import { Button, Icon } from 'antd'
+import { isEmail } from '../../core/helper'
 
 const Container = styled.form`
   position: relative;
@@ -35,26 +36,33 @@ const Submit = styled(Button)`
   margin: 0 auto;
 `
 
+const Error = styled.span`
+  color: red;
+  font-size: 16px;
+`
+
 const validate = value => {
   console.log('vlaue', value)
   const error = {}
-  if (!value.id) {
-    error.id = 'please fill'
+  if (!value.email) {
+    error.email = 'please fill email'
+  } else if (!isEmail(value.email)) {
+    error.email = 'email format is incorrect'
   }
   if (!value.password) {
-    error.password = 'please fill'
+    error.password = 'please fill password'
   }
 
   return error
 }
 
-const Login = ({ isLoading, login, handleSubmit, ...props }) => (
+const Login = ({ isLoading, login, handleSubmit, errorMessage, ...props }) => (
   <Container onSubmit={handleSubmit(values => login(values))}>
     <Form>
       <CustomField
-        name="id"
+        name="email"
         type="text"
-        placeholder="id"
+        placeholder="email"
         addonBefore={<Icon type="user" />}
       />
       <CustomField
@@ -63,6 +71,7 @@ const Login = ({ isLoading, login, handleSubmit, ...props }) => (
         placeholder="password"
         addonBefore={<Icon type="lock" />}
       />
+      {errorMessage && <Error>{errorMessage}</Error>}
       <Submit loading={isLoading} type="primary" htmlType="submit">
         Submit
       </Submit>
@@ -74,6 +83,7 @@ const enhancer = compose(
   connect(
     state => ({
       isLoading: state.auth.isLoading,
+      errorMessage: state.auth.errorMessage,
     }),
     { login },
   ),

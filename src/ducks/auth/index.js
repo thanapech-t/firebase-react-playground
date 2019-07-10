@@ -1,36 +1,68 @@
-import { put, takeLatest, delay } from 'redux-saga/effects'
+import { put, takeLatest, call } from 'redux-saga/effects'
 import { createReducer, Creator } from '../helper'
+import auth from '../../firebase'
 
 const SET_DATA_AUTH = 'SET_DATA_AUTH'
 const GET_DATA_AUTH = 'GET_DATA_AUTH'
 const LOGIN = 'LOGIN'
 const LOGOUT = 'LOGOUT'
 
-export const setDataUser = Creator(SET_DATA_AUTH, 'data')
+export const setDataAuth = Creator(SET_DATA_AUTH, 'data')
 export const getUserInfo = Creator(GET_DATA_AUTH)
 export const login = Creator(LOGIN, 'data')
 export const logout = Creator(LOGOUT)
 
+function onAuthStateChanged() {
+  return new Promise((resolve, reject) => {
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        resolve(user)
+      } else {
+        reject(new Error('Ops!'))
+      }
+    })
+  })
+}
+
 export function* getUserInfoSaga() {
   try {
-    const checkToken = sessionStorage.getItem('loginPlayground')
+    const response = yield call(onAuthStateChanged)
+    const checkToken = sessionStorage.getItem('tokenFirebase')
+
     if (checkToken) {
-      yield put(setDataUser({ isLogin: true }))
+      if (response.email) {
+        yield put(setDataAuth({ user: response.email, isLogin: true }))
+      }
     }
   } catch (error) {
   } finally {
-    yield put(setDataUser({ initialized: true }))
+    yield put(setDataAuth({ initialized: true }))
   }
 }
 
 export function* loginSaga({ payload: { data } }) {
   try {
-    sessionStorage.setItem('loginPlayground', true)
-    yield put(setDataUser({ user: { id: data.id }, isLogin: true }))
+    const response = yield auth.signInWithEmailAndPassword(
+      data.email,
+      data.password,
+    )
+    sessionStorage.setItem('tokenFirebase', response.user.ra)
+    yield put(setDataAuth({ user: response.user.email, isLogin: true }))
   } catch (error) {
+    switch (error.code) {
+      case 'auth/user-not-found':
+        yield put(setDataAuth({ errorMessage: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' }))
+        break
+      case 'auth/wrong-password':
+        yield put(setDataAuth({ errorMessage: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' }))
+        break
+      default:
+        yield put(setDataAuth({ errorMessage: 'เซิฟเวอร์มีปัญหา' }))
+        break
+    }
   } finally {
     yield put(
-      setDataUser({
+      setDataAuth({
         isLoading: false,
       }),
     )
@@ -39,12 +71,13 @@ export function* loginSaga({ payload: { data } }) {
 
 export function* logoutSaga() {
   try {
+    yield auth.signOut()
     sessionStorage.clear()
-    yield put(setDataUser({ isLogin: false }))
+    yield put(setDataAuth({ isLogin: false, user: {} }))
   } catch (error) {
   } finally {
     yield put(
-      setDataUser({
+      setDataAuth({
         isLoading: false,
       }),
     )
@@ -62,6 +95,7 @@ const initial = {
   initialized: false,
   isLogin: false,
   isLoading: false,
+  errorMessage: '',
   routes: [],
 }
 
